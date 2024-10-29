@@ -163,6 +163,7 @@ cython_debug/
 codealike.json
 
 # app specific
+ca_cert/*.pem
 data/**
 !data/company_tickers.json
 # ^ include

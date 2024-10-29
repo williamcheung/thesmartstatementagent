@@ -1,8 +1,12 @@
 brotli==1.1.0
 bs4==0.0.2
 langchain==0.3.4
+mysqlclient==2.2.5
 nltk==3.9.1
 # still need: python -m nltk.downloader punkt_tab
 openai==1.52.2
+pymysql==1.1.1
 python-dotenv==1.0.1
 requests==2.32.3
+sqlalchemy==2.0.36
+tidb_vector==0.0.12
