@@ -8,11 +8,12 @@ from openai import OpenAI
 from typing import Any
 
 OPENAI_EMBEDDING_MODEL = os.getenv('OPENAI_EMBEDDING_MODEL')
+OPENAI_EMBEDDING_API_KEY = os.getenv('OPENAI_EMBEDDING_API_KEY')
 
 embed_model_dims = int(os.getenv('OPENAI_EMBEDDING_MODEL_DIMS')) # ref: https://platform.openai.com/docs/models/embeddings
 print(f'{embed_model_dims=}')
 
-client = OpenAI(api_key=os.getenv('OPENAI_EMBEDDING_API_KEY'))
+client = OpenAI(api_key=OPENAI_EMBEDDING_API_KEY)
 
 def embed_filing_chunk(chunk: str) -> list[float]:
     response = _do_embedding_request(chunk)
