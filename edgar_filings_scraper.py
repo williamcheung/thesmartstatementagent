@@ -15,6 +15,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from edgar_cik import get_cik
+from rest_api import send_heartbeat
 
 # constants
 MIN_YEAR = int(os.getenv('MIN_YEAR', str(datetime.datetime.now().year)))
@@ -141,7 +142,9 @@ def _edgar_save_filing_text(ticker: str, filing_urls: list[str]) -> None:
 
         plain_html_url = url.replace('ix?doc=/', '')
 
+        send_heartbeat()
         soup = _get_html(plain_html_url, mimic_browser=True)
+        send_heartbeat()
 
         hidden_divs_to_remove = soup.find_all('div', style='display:none')
         for div in hidden_divs_to_remove: # remove these for human reader, these are for the XBRL viewer

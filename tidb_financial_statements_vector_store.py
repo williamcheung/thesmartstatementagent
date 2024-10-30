@@ -9,6 +9,7 @@ from tidb_vector.integrations import TiDBVectorClient
 from edgar_filings_scraper import get_filing_text, get_form_type, scrape_filings_from_edgar
 from filing_chunker import chunk_filing
 from filing_embedder_openai import embed_filing_chunk, embed_filing_chunks, embed_model_dims
+from rest_api import send_heartbeat
 
 ONE_EMBEDDING_REQ_FOR_ALL_CHUNKS_IN_FILING = True
 MAX_INSERT_BATCH_SIZE = os.getenv('MAX_INSERT_BATCH_SIZE')
@@ -45,6 +46,8 @@ def _get_chunk_embeddings(ticker: str) -> list[tuple[str, list[float]], dict[str
         chunk_end_time = time.time()
         total_chunking_time += chunk_end_time - chunk_start_time
 
+        send_heartbeat()
+
         try:
             if ONE_EMBEDDING_REQ_FOR_ALL_CHUNKS_IN_FILING:
                 API_LIST_SIZE_LIMIT = 2048
@@ -60,6 +63,9 @@ def _get_chunk_embeddings(ticker: str) -> list[tuple[str, list[float]], dict[str
         except Exception as e:
             print(f'Error embedding [{ticker}] chunks for {url}: {e}')
             continue # skip this filing
+
+        finally:
+            send_heartbeat()
 
         for i, (chunk, embedding) in enumerate(zip(chunks, embeddings), start=1):
             chunk_embeddings.append((chunk, embedding, _build_chunk_metadata(ticker, url, title, date, form_type, i)))
@@ -102,6 +108,7 @@ def load_ticker_filings_into_vector_store(ticker):
             embeddings=[embedding for (_, embedding, _) in sublist],
             metadatas=[meta for (_, _, meta) in sublist]
         )
+        send_heartbeat()
     end_time = time.time()
     print(f'[{ticker}] Elapsed time to insert to vector store: {round(end_time - start_time, 2)} secs')
 
